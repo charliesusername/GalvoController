@@ -1,0 +1,283 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConfocalControlLibrary
+{
+    public class Scan
+    {
+        #region Constructor
+        public Scan(double x0, double y0, double width, double height, int pixels, double dwellTime,
+            ScanType type = ScanType.Ramp, double samplingFrequency = 5000, bool multiDirectional = true)
+            : this(x0, y0, width, height, width / pixels, dwellTime, type,multiDirectional)
+        {
+        }
+
+        protected Scan(double x0, double y0, double width, double height, double dx, double dwellTime,
+            ScanType type = ScanType.Ramp, bool multiDirectional = true)
+        {
+            X0 = x0;
+            Y0 = y0;
+            Width = width;
+            Height = height;
+            Dx = dx;
+            DwellTime = dwellTime;
+            Type = type;
+            XPixels = Convert.ToInt32(Width / Dx);
+            YPixels = Convert.ToInt32(Height / Dx);
+            NumberOfPixels = XPixels * YPixels;
+            MultiDirectional = multiDirectional;
+        }
+
+        #endregion
+
+        #region Properties
+        
+        /// <summary>
+        /// the x start point
+        /// </summary>
+        public double X0 { get; set; }
+
+        /// <summary>
+        /// the y start point
+        /// </summary>
+        public double Y0 { get; set; }
+
+        /// <summary>
+        /// the length of x in the matrix grid
+        /// </summary>
+        public double Width { get; private set; }
+
+        /// <summary>
+        /// the length of y in the matrix grid
+        /// </summary>
+        public double Height { get; private set; }
+
+        /// <summary>
+        /// resolution size (or the real distance between pixels)
+        /// </summary>
+        public double Dx { get; private set; }
+
+        /// <summary>
+        /// number of pixels in X
+        /// </summary>
+        public int XPixels { get; private set; }
+
+        /// <summary>
+        /// number of pixels in Y
+        /// </summary>
+        public int YPixels { get; private set; }
+
+        /// <summary>
+        /// The total number of pixels in the image.
+        /// </summary>
+        public int NumberOfPixels { get; private set; }
+
+        /// <summary>
+        /// The number of milliseconds to dwell on each pixel.
+        /// </summary>
+        public double DwellTime { get; set; }
+
+        /// <summary>
+        /// The type of the scan.
+        /// </summary>
+        public ScanType Type { get; set; }
+
+        /// <summary>
+        /// The total time it would take to scan.
+        /// </summary>
+        public TimeSpan ScanTime
+        {
+            get { return TimeSpan.FromSeconds(DwellTime * XPixels * YPixels / 1000 ); }
+        }
+
+        /// <summary>
+        /// True if the scan if multidirectional.
+        /// </summary>
+        public bool MultiDirectional { get; set; }
+
+        /// <summary>
+        /// The current pixel index the scan is at.
+        /// </summary>
+        public int CurPixelIndex { get; private set; }
+
+        /// <summary>
+        /// Is true if at the current scan position we are scanning the image vector at the oppoiste direction.
+        /// </summary>
+        public bool IsReverseDirection { get; private set; }
+
+        /// <summary>
+        /// True if the scan has reached its end positions.
+        /// </summary>
+        public bool PositionAtEnd { get { return CurPixelIndex >= NumberOfPixels; } }
+
+        #endregion
+
+        #region Scan and positioning.
+
+        /// <summary>
+        /// Return the x,y poisiton from the index of the pixel in the pixels vector.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="xi"></param>
+        /// <param name="yi"></param>
+        public void ImageXYFromPixelVectorIndex(int index, out int xi, out int yi)
+        {
+            xi = index % YPixels;
+            yi = (index - xi) / XPixels;
+
+            if (MultiDirectional && yi % 2 != 0)
+            {
+                xi = (XPixels - xi - 1);
+            }
+        }
+
+        /// <summary>
+        /// Resets the scan to its initial position.
+        /// </summary>
+        public void Reset()
+        {
+            CurPixelIndex = 0;
+        }
+
+        public long getTotalNumberOfVoltagePoints(double samplingFrequency)
+        {
+            return Convert.ToInt64(ScanTime.TotalSeconds * samplingFrequency);
+        }
+
+        /// <summary>
+        /// Calclates a the next set of scan voltages for s pecified sampling frequency.
+        /// </summary>
+        /// <param name="samplingFrequency"></param>
+        /// <param name="maxBufferSize">The max size of the buffer we advance. Next call will start a this pixel index (and directionality), unless reset is called.
+        /// Must be above SamplingFrequency*DwellTime/1000</param>
+        /// <returns></returns>
+        public unsafe virtual double[,] NextScanVoltages(double samplingFrequency, int maxBufferSize)
+        {
+            // calculating the required buffer size.
+            int ticksPerPixel = Convert.ToInt32(DwellTime / 1000 * samplingFrequency);
+            if (ticksPerPixel <= 0)
+                ticksPerPixel = 1;
+
+            int maxAvailablePixels = maxBufferSize / ticksPerPixel;
+            int waitingPixelCount = NumberOfPixels - CurPixelIndex;
+            int N = waitingPixelCount < maxAvailablePixels ? maxAvailablePixels : waitingPixelCount;
+
+            if (N <= 0)
+                return null; // no pixels to be calculated.
+
+            double[,] positions = new double[2, N * ticksPerPixel];
+
+            // calculate the dwell time.
+            int durTics = Convert.ToInt32(Math.Ceiling(DwellTime / 1000 * samplingFrequency));
+            double durDx = Dx / durTics;
+            double durDxHalf = durDx / 2;
+
+            // scan parametes.
+            double xVol = 0, yVol = 0;
+            int yi, xi, di;
+            int xl = XPixels;
+
+            // making the calculation actions.
+            Action<int> calcAction = null;
+
+            switch (Type)
+            {
+                case ScanType.Step:
+                    calcAction = (idx) =>
+                    {
+                        // write current voltage to array
+                        positions[0, idx] = xVol + durDxHalf;
+                        positions[1, idx] = yVol + durDxHalf;
+                    };
+                    break;
+                case ScanType.Diagonal:
+                    calcAction = (idx) =>
+                    {
+                        // write current voltage to array
+                        positions[0, idx] = xVol;
+                        positions[1, idx] = yVol;
+
+                        xVol += durDx;
+                        yVol += durDx;
+                    };
+                    break;
+                default: //ramp
+                    calcAction = (idx) =>
+                    {
+                        // write current voltage to array
+                        positions[0, idx] = xVol;
+                        positions[1, idx] = yVol + durDxHalf;
+
+                        xVol += durDx;
+                    };
+                    break;
+            }
+
+            // Getting the start position.
+            ImageXYFromPixelVectorIndex(CurPixelIndex, out xi, out yi);
+
+            // calculating the x and y voltages where we start.
+            xVol = Dx * xi + X0;
+            yVol = Dx * yi + Y0;
+
+            int tickIndex = CurPixelIndex * ticksPerPixel;
+
+            // calculating the start position.
+            for (int i = 0; i < N; i++)
+            {
+                for (di = 0; di < durTics; di++)
+                {
+                    // write current voltage to array
+                    calcAction(tickIndex);
+
+                    // advance the tick index.
+                    tickIndex += 1;
+                }
+
+                // this is the pixel index.
+                calcAction(i);
+
+                // moving to next.
+                if (xi >= xl)
+                {
+                    xi = 0;
+                    yi += 1;
+                    xVol = X0;
+                    yVol = Dx * yi + Y0;
+                }
+                else
+                {
+                    xi += 1;
+                    xVol = Dx * xi + X0;
+                }
+
+                CurPixelIndex += 1;
+            }
+
+            return positions;
+        }
+
+        #endregion
+    }
+
+    public enum ScanType
+    {
+        /// <summary>
+        /// Stop at the top left corner of each scaninterval box.
+        /// </summary>
+        Step = 1,
+
+        /// <summary>
+        /// Contius ramp up from left to right at the middle of the scaninterval box.
+        /// </summary>
+        Ramp = 2,
+
+        /// <summary>
+        /// Do a diagnal scan over the box.
+        /// </summary>
+        Diagonal = 4,
+    }
+}

@@ -1,0 +1,351 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head><link rel="stylesheet" type="text/css" href="description/Combined.css,0:HeaderFooterSprite,0:Header.NonMtps,1:LinkList;/Areas/Centers/Themes/StandardDevCenter/Content:0,/Areas/Epx/Themes/Base/Content:1&amp;amp;hashKey=C9973DA951AE6202C9B348379A1BE49D" xmlns="http://www.w3.org/1999/xhtml" />
+<link type="text/css" rel="stylesheet" xmlns="http://www.w3.org/1999/xhtml" />
+<link rel="stylesheet" type="text/css" href="description/67b74b86-a273-4ad7-9ed5-0f97276412eaCombined.css,0:HeaderFooterSprite,0:Footer.NonMtps,1:LinkList;/Areas/Centers/Themes/StandardDevCenter/Content:0,/Areas/Epx/Themes/Base/Content:1&amp;amp;hashKey=F576C687BC536B84D6E5B3246EE39B49" xmlns="http://www.w3.org/1999/xhtml" />
+<link type="text/css" rel="stylesheet" xmlns="http://www.w3.org/1999/xhtml" />
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Complete Picture Viewer tutorial sample</title>
+        <link href="description/Galleries.css" type="text/css" rel="Stylesheet" /><link href="description/Layout.css" type="text/css" rel="Stylesheet" /><link href="description/Brand.css" type="text/css" rel="Stylesheet" />
+            <link href="description/librarydescription.css" rel="Stylesheet" type="text/css" />
+        <link href="description/iframedescription.css" rel="Stylesheet" type="text/css" />
+        <script src="description/offline.js" type="text/javascript"></script>
+        <style type="text/css">
+            #projectInfo {
+                overflow: auto;
+            }
+            #longDesc {
+                clear:both;
+                margin: 25px 0 10px 0;
+            }
+
+            #SampleIndexList{
+                margin-left: 15px;
+            }
+        </style>
+    </head>
+<body>
+    <div id="offlineDescription">
+        <h1>Complete Picture Viewer tutorial sample</h1>
+        <br/>
+        <div id="projectInfo">
+            <div class="section">
+                    <div class="itemBarLong tagsContainer">
+                        <label for="Technologies">Technologies</label>
+                        <div id="Technologies">
+                            Controls, Windows Forms, Visual Basic .NET, Visual C Sharp .NET
+                        </div>
+                    </div>
+                    <div class="itemBarLong tagsContainer">
+                        <label for="Topics">Topics</label>
+                        <div id="Topics">
+                            Controls, Visual Studio Editor, Windows Forms, Visual Basic .NET, Properties, Windows Forms Controls, Visual C Sharp .NET
+                        </div>
+                    </div>
+                <div class="itemBarLong">
+                    <label for="Platforms">Platforms</label>
+                    <div id="Platforms">
+                        Desktop
+                    </div>
+                </div>
+                <div class="itemBarLong">
+                    <label for="Requirements">Requirements</label>
+                    <div id="Requirements">
+                        
+                    </div>
+                </div>
+                <div class="itemBar">
+                    <label for="LastUpdated">Primary language</label>
+                    <div id="LastUpdated">en-US</div>
+                </div>
+                <div class="itemBar">
+                    <label for="LastUpdated">Updated</label>
+                    <div id="LastUpdated">10/25/2013</div>
+                </div>
+                <div class="itemBarLong">
+                    <label for="License">License</label>
+                    <div id="License">
+                        <a href="license.rtf">Apache License, Version 2.0</a></div>
+                </div>
+                <div class="itemBar">
+                    <div class="viewonlinecont">
+                        <a data-link="online" href="http://code.msdn.microsoft.com/Complete-Picture-Viewer-7d91d3a8">View this sample online</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+                   
+<script type="text/javascript">
+    function initializePage() {
+        var otherTabClass = 'otherTab';
+        var hiddenPreClass = 'hidden';
+
+        var htmlDecode = function(encodedData) {
+            var decodedData = "";
+            if (encodedData) {
+                var div = document.createElement('div');
+                div.innerHTML = encodedData;
+                decodedData = div.firstChild.nodeValue.replace( /\\r\\n/ig , '\r\n');
+            }
+            return decodedData;
+        };
+                
+        Galleries.iterateElem(Galleries.findElem(null, 'div', 'scriptcode'), function (index, scriptBlock) {
+            var titleElem = Galleries.findElem(scriptBlock, 'div', 'title')[0];
+            var labelElems = Galleries.findElem(titleElem, 'span');
+            if (labelElems.length == 0) {
+                labelElems = titleElem;
+            }
+            var languageSpans = Galleries.findElem(scriptBlock, 'span', 'hidden');
+            var pres = Galleries.findElem(scriptBlock, 'pre');
+            if (languageSpans.length > 0 && pres.length > 1) {
+                Galleries.iterateElem(labelElems, function(index, elem) {
+                    var codePre = pres[index];
+                    var labelSpan = elem;
+                    var languageSpan = languageSpans[index];
+                            
+                    elem.code = codePre.innerHTML.replace( /(\r(\n)?)|((\r)?\n)/ig , '\\r\\n');
+                            
+                    codePre.className = codePre.className.replace(hiddenPreClass, '');
+                            
+                    languageSpan.parentNode.removeChild(languageSpan);
+                });
+
+                pres = Galleries.findElem(scriptBlock, 'pre');
+                Galleries.iterateElem(labelElems, function(index, elem) {
+                    var codePre = pres[index];
+                    var labelSpan = elem;
+                    if (index == 0) {
+                        scriptBlock.activeTab = 0;
+                    }
+                    else {
+                        labelSpan.className += otherTabClass;
+                        codePre.className += hiddenPreClass;
+                    }
+                    Galleries.attachEventHandler(labelSpan, 'click', function(e) {
+                        var activeTab = scriptBlock.activeTab;
+                        labelElems[activeTab].className += otherTabClass;
+                        pres[activeTab].className += hiddenPreClass;
+
+                        codePre.className = codePre.className.replace(hiddenPreClass, '');
+                        labelSpan.className = labelSpan.className.replace(otherTabClass, '');
+                        scriptBlock.activeTab = index;
+                    });
+                });
+
+                var preview = Galleries.findElem(scriptBlock, 'div', 'preview');
+                if (preview.length == 0) {
+                    preview.push(pres[pres.length - 1]);
+                }
+                Galleries.iterateElem(preview, function(index, elem) {
+                    elem.parentNode.removeChild(elem);
+                });
+
+                if (window.clipboardData && clipboardData.setData) {
+                    var copyLink = document.createElement('a');
+                    copyLink.href = 'javascript:void(0);';
+                    copyLink.className = 'copyCode';
+                    copyLink.innerHTML = 'Copy code';
+                    Galleries.attachEventHandler(copyLink, 'click', function (e) {
+                        clipboardData.setData("Text", htmlDecode(labelElems[scriptBlock.activeTab].code));
+                        return false;
+                    });
+                    scriptBlock.insertBefore(copyLink, scriptBlock.childNodes[0]);
+                }
+            }
+        });
+    }
+
+    Galleries.onWindowLoad(function(){
+        initializePage();
+    });
+
+</script>
+<div id="longDesc">
+    
+<div class="content">
+<div>
+<div class="topic">
+<div class="majorTitle">Visual Studio 2012</div>
+<h1 class="title">Tutorial 1: Create a Picture Viewer</h1>
+<div id="mainSection">
+<div id="mainBody">
+<div class="introduction">
+<p>In this tutorial, you build a program that loads a picture from a file and displays it in a window. You learn how to drag controls like buttons and picture boxes on your form, set their properties, and use containers to smoothly resize the form. You also
+ get started writing code. You learn how to: </p>
+<ul>
+<li>
+<p>Create a new project.</p>
+</li><li>
+<p>Test (debug) an application.</p>
+</li><li>
+<p>Add basic controls like check boxes and buttons to a form.</p>
+</li><li>
+<p>Position controls on a form using layouts.</p>
+</li><li>
+<p>Add <span class="label">Open File</span> and <span class="label">Color</span> dialog boxes to a form.</p>
+</li><li>
+<p>Write code using IntelliSense and code snippets.</p>
+</li><li>
+<p>Write event handler methods.</p>
+</li></ul>
+<p>When you finish, your program will look like the following picture.</p>
+<div class="caption">Picture that you create in this tutorial</div>
+<br>
+<img id="Express_PictureViewerDone" alt="Picture that you create in this tutorial" src="http://i.msdn.microsoft.com/en-us/library/dd492135.Express_PictureViewerDone(v=vs.120).png" title="Picture that you create in this tutorial">
+<p>To download a completed version of the sample, see <a href="http://code.msdn.microsoft.com/Complete-Picture-Viewer-7d91d3a8">
+Complete Picture Viewer tutorial sample</a>.</p>
+<p><img id="PlayVideo" alt="link to video" src="http://i.msdn.microsoft.com/en-us/library/dd492135.PlayVideo(v=vs.120).gif" title="link to video">For a video version of this topic, see
+<a href="http://go.microsoft.com/fwlink/?LinkId=205207" >How Do I: Create a Picture Viewer in Visual Basic?</a> or
+<a href="http://go.microsoft.com/fwlink/?LinkId=205198" >How Do I: Create a Picture Viewer in C#?</a>.</p>
+<div class="alert">
+<table>
+<tbody>
+<tr>
+<th align="left"><img id="alert_note" alt="Note" src="http://i.msdn.microsoft.com/en-us/library/dd492135.alert_note(v=vs.120).gif" title="Note"><strong>Note</strong></th>
+</tr>
+<tr>
+<td>
+<p>These videos use an earlier version of Visual Studio, so there are slight differences in some menu commands and other user interface elements. However, the concepts and procedures work similarly in the current version of Visual Studio. Visual C# and Visual
+ Basic are both covered in this tutorial, so focus on information specific to the programming language that you're using.
+</p>
+<p>To see code for Visual Basic, choose the <span class="label">VB</span> tab at the top of code blocks, and to see code for Visual C#, choose the
+<span class="label">C#</span> tab. If you're interested in learning about Visual C&#43;&#43;, see
+<span><a href="http://msdn.microsoft.com/en-us/library/zdbe067e.aspx">Getting Started with Visual C&#43;&#43; in Visual Studio 2013</a></span> and
+<a href="http://www.cplusplus.com/doc/tutorial/">C&#43;&#43; Language Tutorial</a>. </p>
+<p>If you're interested in learning how to write Visual C# or Visual Basic apps for the Windows Store, see
+<a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh974581.aspx">Create your first Windows Store app using C# or Visual Basic</a>. For information about creating JavaScript apps for the Windows Store, see
+<a href="http://msdn.microsoft.com/en-us/library/windows/apps/br211385.aspx">Create your first Windows Store app using JavaScript</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="LW_CollapsibleArea_Container">
+<div class="LW_CollapsibleArea_TitleDiv"><span class="LW_CollapsibleArea_Title">Related Topics</span>
+<div class="LW_CollapsibleArea_HrDiv">
+<hr class="LW_CollapsibleArea_Hr">
+</div>
+</div>
+<a id="sectionToggle0"></a>
+<div class="caption"></div>
+<div class="tableSection">
+<table>
+<tbody>
+<tr>
+<th>
+<p>Title</p>
+</th>
+<th>
+<p>Description</p>
+</th>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492132.aspx">Step 1: Create a Windows Forms Application Project</a></span></p>
+</td>
+<td>
+<p>Begin by creating a Windows Forms application project.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492157.aspx">Step 2: Run Your Program</a></span></p>
+</td>
+<td>
+<p>Run the Windows Forms application program that you created in the previous step.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492146.aspx">Step 3: Set Your Form Properties</a></span></p>
+</td>
+<td>
+<p>Change the way your form looks using the <span class="label">Properties</span> window.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492143.aspx">Step 4: Lay Out Your Form with a TableLayoutPanel Control</a></span></p>
+</td>
+<td>
+<p>Add a <span class="input">TableLayoutPanel</span> control to your form.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492173.aspx">Step 5: Add Controls to Your Form</a></span></p>
+</td>
+<td>
+<p>Add controls, such as a <span class="input">PictureBox</span> control and a <span class="input">
+CheckBox</span> control, to your form. Add buttons to your form.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492140.aspx">Step 6: Name Your Button Controls</a></span></p>
+</td>
+<td>
+<p>Rename your buttons to something more meaningful.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492176.aspx">Step 7: Add Dialog Components to Your Form</a></span></p>
+</td>
+<td>
+<p>Add an <span class="label">OpenFileDialog</span> component and a <span class="label">
+ColorDialog</span> component to your form.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492131.aspx">Step 8: Write Code for the Show a Picture Button Event Handler</a></span></p>
+</td>
+<td>
+<p>Write code using the IntelliSense tool.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492177.aspx">Step 9: Review, Comment, and Test Your Code</a></span></p>
+</td>
+<td>
+<p>Review and test your code. Add comments as needed.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492133.aspx">Step 10: Write Code for Additional Buttons and a Check Box</a></span></p>
+</td>
+<td>
+<p>Write code to make other buttons and a check box work using IntelliSense.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><span><a href="http://msdn.microsoft.com/en-us/library/dd492148.aspx">Step 11: Run Your Program and Try Other Features</a></span></p>
+</td>
+<td>
+<p>Run your program and set the background color. Try other features, such as changing colors, fonts, and borders.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+
+    </div>
+</body>
+</html>
